@@ -90,6 +90,61 @@ Claude should act as:
 
 ---
 
+## Commenting Guidelines
+
+- Prefer clear naming and simple structure over excessive comments.
+- Do not add obvious comments that merely repeat the code.
+- Add comments only when they explain intention, constraints, or non-obvious decisions.
+- Use comments for:
+  - Discord/JDA-specific behavior
+  - Time calculation rules
+  - Transaction boundaries
+  - Edge cases such as bot restart, duplicate voice events, or channel movement
+  - Temporary limitations or TODOs
+- Avoid large block comments unless they explain important design decisions.
+- Keep comments concise and maintain them when code changes.
+
+### JavaDoc
+
+- Use JavaDoc for public services or methods only when the behavior is not obvious.
+- Do not generate JavaDoc for every class or method automatically.
+- Prefer test names and method names to document expected behavior.
+
+### TODO Rule
+
+- TODO comments must include a concrete reason or next action.
+
+Good:
+```java
+// TODO: Handle unfinished sessions after bot restart.
+````
+
+Bad:
+
+```java
+// TODO: Fix later.
+```
+
+### Examples
+
+Bad:
+
+```java
+// Get user id
+String userId = event.getUser().getId();
+```
+
+Good:
+
+```java
+// Discord may emit multiple voiceStateUpdate events during channel movement.
+if (isChannelMove(event)) {
+    return;
+}
+```
+
+---
+
 ## Learning Goal
 
 The goal is not only to build a working bot, but to:
