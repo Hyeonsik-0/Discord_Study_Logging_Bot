@@ -1,5 +1,7 @@
 package com.hyeonsik.studybot.service;
 
+import com.hyeonsik.studybot.domain.StudySession;
+import com.hyeonsik.studybot.repository.StudySessionRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -14,6 +16,12 @@ public class StudySessionService {
     // TODO: Replace with DB-backed session storage to survive bot restarts.
     private final Map<Long, LocalDateTime> activeSessions = new ConcurrentHashMap<>();
 
+    private final StudySessionRepository studySessionRepository;
+
+    public StudySessionService(StudySessionRepository studySessionRepository) {
+        this.studySessionRepository = studySessionRepository;
+    }
+
     public void startSession(long userId) {
         activeSessions.put(userId, LocalDateTime.now());
     }
@@ -23,7 +31,9 @@ public class StudySessionService {
         if (startTime == null) {
             return Optional.empty();
         }
-        return Optional.of(Duration.between(startTime, LocalDateTime.now()));
+        LocalDateTime endTime = LocalDateTime.now();
+        studySessionRepository.save(new StudySession(userId, startTime, endTime));
+        return Optional.of(Duration.between(startTime, endTime));
     }
 
     public boolean isStudying(long userId) {
