@@ -34,7 +34,11 @@ public class JdaConfig {
                 .awaitReady();
 
         jda.updateCommands()
-                .addCommands(Commands.slash("ping", "봇 연결 상태 확인"))
+                .addCommands(
+                        Commands.slash("ping", "봇 연결 상태 확인"),
+                        Commands.slash("status", "현재 학습 중 여부 확인"),
+                        Commands.slash("help", "명령어 목록 조회")
+                )
                 .queue();
 
         return jda;
