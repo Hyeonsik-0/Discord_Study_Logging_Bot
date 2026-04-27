@@ -3,6 +3,7 @@ package com.hyeonsik.studybot.service;
 import com.hyeonsik.studybot.domain.StudySession;
 import com.hyeonsik.studybot.repository.StudySessionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class StudySessionService {
         activeSessions.put(userId, LocalDateTime.now());
     }
 
+    @Transactional
     public Optional<Duration> endSession(long userId) {
         LocalDateTime startTime = activeSessions.remove(userId);
         if (startTime == null) {
