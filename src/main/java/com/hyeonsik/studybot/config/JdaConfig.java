@@ -37,6 +37,9 @@ public class JdaConfig {
                 .addCommands(
                         Commands.slash("ping", "봇 연결 상태 확인"),
                         Commands.slash("status", "현재 학습 중 여부 확인"),
+                        Commands.slash("today", "오늘 학습 시간 조회"),
+                        Commands.slash("week", "이번 주 학습 시간 조회"),
+                        Commands.slash("ranking", "이번 주 서버 내 학습 순위 조회"),
                         Commands.slash("help", "명령어 목록 조회")
                 )
                 .queue();
