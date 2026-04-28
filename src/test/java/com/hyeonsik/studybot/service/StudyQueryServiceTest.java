@@ -56,6 +56,18 @@ class StudyQueryServiceTest {
     }
 
     @Test
+    void getTodayDuration_withActiveSession_shouldCountUntilNow() {
+        LocalDateTime now = LocalDateTime.now();
+        StudySession activeSession = new StudySession(12345L, now.minusMinutes(30));
+        when(studySessionRepository.findByUserIdAndStartTimeBetween(eq(12345L), any(), any()))
+                .thenReturn(List.of(activeSession));
+
+        Duration result = studyQueryService.getTodayDuration(12345L);
+
+        assertThat(result).isGreaterThanOrEqualTo(Duration.ofMinutes(29));
+    }
+
+    @Test
     void getWeekRanking_shouldReturnUsersSortedByTotalDuration() {
         LocalDateTime now = LocalDateTime.now();
         when(studySessionRepository.findByStartTimeBetween(any(), any()))

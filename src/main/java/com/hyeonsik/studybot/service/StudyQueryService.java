@@ -8,12 +8,15 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class StudyQueryService {
+
+    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
 
     private final StudySessionRepository studySessionRepository;
 
@@ -22,29 +25,33 @@ public class StudyQueryService {
     }
 
     public Duration getTodayDuration(long userId) {
-        LocalDateTime from = LocalDate.now().atStartOfDay();
+        LocalDateTime now = LocalDateTime.now(SEOUL);
+        LocalDateTime from = LocalDate.now(SEOUL).atStartOfDay();
         LocalDateTime to = from.plusDays(1);
         List<StudySession> sessions = studySessionRepository.findByUserIdAndStartTimeBetween(userId, from, to);
-        return sumDurations(sessions);
+        return sumDurations(sessions, now);
     }
 
     public Duration getWeekDuration(long userId) {
-        LocalDateTime from = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
-        LocalDateTime to = LocalDate.now().plusDays(1).atStartOfDay();
+        LocalDateTime now = LocalDateTime.now(SEOUL);
+        LocalDateTime from = LocalDate.now(SEOUL).with(DayOfWeek.MONDAY).atStartOfDay();
+        LocalDateTime to = LocalDate.now(SEOUL).plusDays(1).atStartOfDay();
         List<StudySession> sessions = studySessionRepository.findByUserIdAndStartTimeBetween(userId, from, to);
-        return sumDurations(sessions);
+        return sumDurations(sessions, now);
     }
 
     public List<RankingEntry> getWeekRanking() {
-        LocalDateTime from = LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay();
-        LocalDateTime to = LocalDate.now().plusDays(1).atStartOfDay();
+        LocalDateTime now = LocalDateTime.now(SEOUL);
+        LocalDateTime from = LocalDate.now(SEOUL).with(DayOfWeek.MONDAY).atStartOfDay();
+        LocalDateTime to = LocalDate.now(SEOUL).plusDays(1).atStartOfDay();
         List<StudySession> sessions = studySessionRepository.findByStartTimeBetween(from, to);
 
         return sessions.stream()
                 .collect(Collectors.groupingBy(
                         StudySession::getUserId,
                         Collectors.reducing(Duration.ZERO,
-                                s -> Duration.between(s.getStartTime(), s.getEndTime()),
+                                s -> Duration.between(s.getStartTime(),
+                                        s.getEndTime() != null ? s.getEndTime() : now),
                                 Duration::plus)
                 ))
                 .entrySet().stream()
@@ -53,9 +60,10 @@ public class StudyQueryService {
                 .toList();
     }
 
-    private Duration sumDurations(List<StudySession> sessions) {
+    private Duration sumDurations(List<StudySession> sessions, LocalDateTime now) {
         return sessions.stream()
-                .map(s -> Duration.between(s.getStartTime(), s.getEndTime()))
+                .map(s -> Duration.between(s.getStartTime(),
+                        s.getEndTime() != null ? s.getEndTime() : now))
                 .reduce(Duration.ZERO, Duration::plus);
     }
 

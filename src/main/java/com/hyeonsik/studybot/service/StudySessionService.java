@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class StudySessionService {
 
-    // TODO: Replace with DB-backed session storage to survive bot restarts.
+    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
+
     private final Map<Long, LocalDateTime> activeSessions = new ConcurrentHashMap<>();
 
     private final StudySessionRepository studySessionRepository;
@@ -23,8 +26,12 @@ public class StudySessionService {
         this.studySessionRepository = studySessionRepository;
     }
 
+    @Transactional
     public void startSession(long userId) {
-        activeSessions.put(userId, LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now(SEOUL);
+        if (activeSessions.putIfAbsent(userId, now) == null) {
+            studySessionRepository.save(new StudySession(userId, now));
+        }
     }
 
     @Transactional
@@ -33,12 +40,22 @@ public class StudySessionService {
         if (startTime == null) {
             return Optional.empty();
         }
-        LocalDateTime endTime = LocalDateTime.now();
-        studySessionRepository.save(new StudySession(userId, startTime, endTime));
+        LocalDateTime endTime = LocalDateTime.now(SEOUL);
+        studySessionRepository.findByUserIdAndEndTimeIsNull(userId)
+                .ifPresent(session -> {
+                    session.complete(endTime);
+                    studySessionRepository.save(session);
+                });
         return Optional.of(Duration.between(startTime, endTime));
     }
 
     public boolean isStudying(long userId) {
         return activeSessions.containsKey(userId);
+    }
+
+    // Restores in-progress sessions from DB after bot restart.
+    public void restoreActiveSessions() {
+        List<StudySession> sessions = studySessionRepository.findByEndTimeIsNull();
+        sessions.forEach(s -> activeSessions.putIfAbsent(s.getUserId(), s.getStartTime()));
     }
 }

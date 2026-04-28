@@ -86,6 +86,10 @@ public class SlashCommandListener extends ListenerAdapter {
                 `/today` - 오늘 학습 시간 조회
                 `/week` - 이번 주 학습 시간 조회
                 `/ranking` - 이번 주 서버 내 학습 순위 조회
+
+                **스터디 채널 등록 방법**
+                이름이 `공부방`으로 시작하는 음성 채널을 개설하면 자동으로 스터디 채널로 인식됩니다.
+                예) 공부방1, 공부방-오전, 공부방A
                 """;
         event.reply(message).queue();
     }

@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "study_sessions")
+@Table(name = "study_sessions", indexes = {
+        @Index(name = "idx_user_start", columnList = "userId, startTime"),
+        @Index(name = "idx_start_time", columnList = "startTime")
+})
 public class StudySession {
 
     @Id
@@ -17,14 +20,23 @@ public class StudySession {
     @Column(nullable = false)
     private LocalDateTime startTime;
 
-    @Column(nullable = false)
     private LocalDateTime endTime;
 
     protected StudySession() {}
 
+    public StudySession(long userId, LocalDateTime startTime) {
+        this.userId = userId;
+        this.startTime = startTime;
+    }
+
     public StudySession(long userId, LocalDateTime startTime, LocalDateTime endTime) {
         this.userId = userId;
         this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    // Called when a study session ends.
+    public void complete(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
