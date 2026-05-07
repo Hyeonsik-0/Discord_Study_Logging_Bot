@@ -8,10 +8,43 @@ Spring Boot + JDA 기반 스터디 시간 기록 봇
 - TDD 적용
 
 ## Tech Stack
-- Java / Spring Boot
-- JDA
-- MySQL
-- Docker
+- Java 17 / Spring Boot / Gradle
+- JDA (Java Discord API)
+- MySQL + Spring Data JPA
+- Docker / Docker Compose
+
+자세한 내용은 [docs/tech-stack.md](docs/tech-stack.md) 참고.
+
+## Setup
+
+### Prerequisites
+- Java 17+
+- Docker / Docker Compose
+- Discord Bot Token ([Discord Developer Portal](https://discord.com/developers/applications) 에서 발급)
+
+### Steps
+1. 저장소 클론
+   ```bash
+   git clone https://github.com/Hyeonsik-0/Discord_Study_Logging_Bot.git
+   cd Discord_Study_Logging_Bot
+   ```
+
+2. `.env` 파일 생성 및 토큰 설정
+   ```bash
+   cp .env.example .env
+   # .env 열어서 DISCORD_TOKEN 채우기
+   ```
+
+3. MySQL 컨테이너 실행
+   ```bash
+   docker compose up -d
+   ```
+
+4. 봇 실행
+   ```bash
+   ./gradlew bootRun
+   ```
+   또는 IntelliJ에서 `StudybotApplication` Run.
 
 ## Features (MVP)
 
@@ -45,5 +78,12 @@ Spring Boot + JDA 기반 스터디 시간 기록 봇
 #### 학습 순위 조회
 
 서버 내 사용자들의 주간 누적 학습 시간을 기준으로 순위를 제공한다.  
-초기에는 주간 랭킹만 제공하고, 추후 일간/월간/연간 랭킹으로 확장할 수 있다.  
-  
+초기에는 주간 랭킹만 제공하고, 추후 일간/월간/연간 랭킹으로 확장할 수 있다.
+
+## Documentation
+
+- [tech-stack.md](docs/tech-stack.md) — 기술 스택과 선택 이유
+- [architecture.md](docs/architecture.md) — 시스템 아키텍처 및 계층 구조
+- [agent-usage.md](docs/agent-usage.md) — AI Agent 활용 전략
+- [decisions/](docs/decisions/) — Architecture Decision Records
+- [devlog/](docs/devlog/) — 개발 일지
