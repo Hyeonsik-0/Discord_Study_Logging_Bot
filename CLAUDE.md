@@ -70,3 +70,8 @@ See [`docs/architecture.md`](docs/architecture.md).
 ## Layer guides
 - [`listener/CLAUDE.md`](src/main/java/com/hyeonsik/studybot/listener/CLAUDE.md) — JDA event edge cases
 - [`service/CLAUDE.md`](src/main/java/com/hyeonsik/studybot/service/CLAUDE.md) — TDD, timezone, session invariants
+
+## Documentation Practices
+- After a non-trivial technical decision (library choice, architectural change, explicit trade-off comparison), proactively suggest writing an ADR. Criteria: [`docs/decisions/README.md`](docs/decisions/README.md).
+- After a milestone, large refactor, or new tech adoption, proactively suggest writing a devlog entry. Criteria: [`docs/devlog/README.md`](docs/devlog/README.md).
+- Do not suggest for small changes (bug fixes, style tweaks, single-function additions) — keep the signal-to-noise high.
